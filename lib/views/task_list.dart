@@ -6,6 +6,7 @@ import 'package:task_manager/extensions/sizer.dart';
 import '../blocs/task_bloc/task_bloc.dart';
 import '../controllers/task_controller.dart';
 import 'add_task.dart';
+import 'widgets/alert_filter.dart';
 
 class TaskList extends StatefulWidget {
   const TaskList({super.key});
@@ -167,68 +168,6 @@ class _TaskListState extends State<TaskList> {
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
-    );
-  }
-}
-
-class AlertFilter extends StatelessWidget {
-  const AlertFilter({
-    super.key,
-    required this.taskController,
-  });
-
-  final TaskController taskController;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TaskBloc, TaskState>(
-      builder: (context, state) {
-        return AlertDialog.adaptive(
-          title: Text("Filter Tasks"),
-          content: Material(
-            color: Colors.transparent,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text("Completed"),
-                  value: state.completeFilter,
-                  onChanged: (value) =>
-                      context.read<TaskBloc>().add(CompleteChecks(value!)),
-                ),
-                CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
-                  title: Text("Incomplete"),
-                  value: state.incompleteFilter,
-                  onChanged: (value) =>
-                      context.read<TaskBloc>().add(InCompleteChecks(value!)),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                taskController.taskBloc.add(
-                  LoadTasks(
-                    state.completeFilter,
-                    state.incompleteFilter,
-                  ),
-                );
-              },
-              child: Text("Apply"),
-            ),
-          ],
-        );
-      },
     );
   }
 }
