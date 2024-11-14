@@ -6,7 +6,7 @@ class TaskController {
 
   TaskController() : taskBloc = TaskBloc(DatabaseService());
 
-  void loadTasks() => taskBloc.add(LoadTasks());
+  void loadTasks() => taskBloc.add(LoadTasks(true, true));
 
   void addTask(String taskName, String description) =>
       taskBloc.add(AddTask(taskName, description));

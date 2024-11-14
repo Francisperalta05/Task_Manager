@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:sqflite/sqflite.dart';
 
@@ -33,10 +32,6 @@ class DatabaseService {
   ''');
 
     return await getTodo();
-  }
-
-  Future completeTask(int taskId) async {
-    log("$taskId");
   }
 
   Future<Database> open(String path) async {
@@ -83,7 +78,7 @@ class DatabaseService {
     return await db!.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  Future<int> update(int id) async => await db!.update(
+  Future<int> completeTask(int id) async => await db!.update(
         tableName,
         {
           columnCompleted: 1,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_manager/extensions/sizer.dart';
@@ -32,14 +34,28 @@ class _TaskListState extends State<TaskList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocProvider(
-      create: (_) => taskController.taskBloc..add(LoadTasks()),
+      create: (_) => taskController.taskBloc..add(LoadTasks(true, true)),
       child: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: const Text("Task List"),
+          actions: [
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertFilter(taskController: taskController);
+                  },
+                );
+              },
+              icon: Icon(Icons.filter_list_outlined),
+            )
+          ],
         ),
         body: BlocBuilder<TaskBloc, TaskState>(
           builder: (context, state) {
+            log(state.tasks.length.toString());
             if (state.taskLoading) {
               return Center(
                 child: CircularProgressIndicator(
@@ -99,26 +115,27 @@ class _TaskListState extends State<TaskList> {
                     ),
                     leading: Icon(
                       task.completed
-                          ? Icons.task
+                          ? Icons.check_circle
                           : Icons.radio_button_unchecked_rounded,
                       color: task.completed ? theme.primaryColor : Colors.red,
                     ),
                     trailing: PopupMenuButton(
                       itemBuilder: (context) => [
-                        PopupMenuItem(
-                          onTap: () => taskController.completeTask(task.id!),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check,
-                                color: Colors.green,
-                                size: 28.w,
-                              ),
-                              SizedBox(width: 10.w),
-                              const Text("Set as complete"),
-                            ],
+                        if (!task.completed)
+                          PopupMenuItem(
+                            onTap: () => taskController.completeTask(task.id!),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                  size: 28.w,
+                                ),
+                                SizedBox(width: 10.w),
+                                const Text("Set as complete"),
+                              ],
+                            ),
                           ),
-                        ),
                         PopupMenuItem(
                           onTap: () => taskController.deleteTask(task.id!),
                           child: Row(
@@ -150,6 +167,68 @@ class _TaskListState extends State<TaskList> {
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
+    );
+  }
+}
+
+class AlertFilter extends StatelessWidget {
+  const AlertFilter({
+    super.key,
+    required this.taskController,
+  });
+
+  final TaskController taskController;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<TaskBloc, TaskState>(
+      builder: (context, state) {
+        return AlertDialog.adaptive(
+          title: Text("Filter Tasks"),
+          content: Material(
+            color: Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text("Completed"),
+                  value: state.completeFilter,
+                  onChanged: (value) =>
+                      context.read<TaskBloc>().add(CompleteChecks(value!)),
+                ),
+                CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text("Incomplete"),
+                  value: state.incompleteFilter,
+                  onChanged: (value) =>
+                      context.read<TaskBloc>().add(InCompleteChecks(value!)),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                taskController.taskBloc.add(
+                  LoadTasks(
+                    state.completeFilter,
+                    state.incompleteFilter,
+                  ),
+                );
+              },
+              child: Text("Apply"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -5,6 +5,9 @@ final outlineInputBorder = OutlineInputBorder(
 );
 
 ThemeData get themes => ThemeData(
+      // checkboxTheme: CheckboxThemeData(
+      //   fillColor: WidgetStatePropertyAll(Colors.teal),
+      // ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal, // Color vibrante
