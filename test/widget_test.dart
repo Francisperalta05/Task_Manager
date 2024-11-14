@@ -11,8 +11,8 @@ void main() {
     dbTest = await openDatabase(
       inMemoryDatabasePath,
       onCreate: (db, version) {
-        return db
-            .execute('CREATE TABLE items(id INTEGER PRIMARY KEY, nombre TEXT)');
+        return db.execute(
+            'CREATE TABLE items (id INTEGER PRIMARY KEY, nombre TEXT)');
       },
       version: 1,
     );
