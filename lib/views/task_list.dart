@@ -50,7 +50,7 @@ class _TaskListState extends State<TaskList> {
                   },
                 );
               },
-              icon: Icon(Icons.filter_list_outlined),
+              icon: const Icon(Icons.filter_list_outlined),
             )
           ],
         ),
@@ -80,7 +80,7 @@ class _TaskListState extends State<TaskList> {
                 ),
               );
             } else if (state.tasks.isEmpty) {
-              return Center(
+              return const Center(
                 child: Icon(
                   Icons.task,
                   size: 100,

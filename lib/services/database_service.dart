@@ -4,9 +4,8 @@ import 'package:sqflite/sqflite.dart';
 
 import '../models/task.dart';
 
-Database? db;
-
 class DatabaseService {
+  Database? db;
   final String tableName = 'Task_tbl';
 
   static const String columnId = "id";
@@ -15,6 +14,8 @@ class DatabaseService {
   static const String columnCompleted = "completed";
   static const String columnCreated = "createdAt";
   static const String columnUpdated = "lastUpdated";
+
+  DatabaseService({this.db});
 
   Future<List<TaskModel>> fetchTasks() async {
     final databasesPath = await getDatabasesPath();
@@ -36,9 +37,9 @@ class DatabaseService {
 
   Future<Database> open(String path) async {
     try {
-      db = await openDatabase(path);
+      final dbOpen = await openDatabase(path);
 
-      return db!;
+      return dbOpen;
     } on Exception {
       rethrow;
     }
@@ -88,5 +89,5 @@ class DatabaseService {
         whereArgs: [id],
       );
 
-  Future close() async => db!.close();
+  Future close() async => db?.close();
 }

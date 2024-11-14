@@ -17,7 +17,7 @@ class AlertFilter extends StatelessWidget {
     return BlocBuilder<TaskBloc, TaskState>(
       builder: (context, state) {
         return AlertDialog.adaptive(
-          title: Text("Filter Tasks"),
+          title: const Text("Filter Tasks"),
           content: Material(
             color: Colors.transparent,
             child: Column(
@@ -25,14 +25,14 @@ class AlertFilter extends StatelessWidget {
               children: [
                 CheckboxListTile(
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: Text("Completed"),
+                  title: const Text("Completed"),
                   value: state.completeFilter,
                   onChanged: (value) =>
                       context.read<TaskBloc>().add(CompleteChecks(value!)),
                 ),
                 CheckboxListTile(
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: Text("Incomplete"),
+                  title: const Text("Incomplete"),
                   value: state.incompleteFilter,
                   onChanged: (value) =>
                       context.read<TaskBloc>().add(InCompleteChecks(value!)),
@@ -45,7 +45,7 @@ class AlertFilter extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
@@ -57,7 +57,7 @@ class AlertFilter extends StatelessWidget {
                   ),
                 );
               },
-              child: Text("Apply"),
+              child: const Text("Apply"),
             ),
           ],
         );

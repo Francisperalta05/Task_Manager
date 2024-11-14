@@ -1,30 +1,61 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:task_manager/main.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:task_manager/models/task.dart';
+import 'package:task_manager/services/database_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const TaskManager());
+  late Database dbTest;
+  late DatabaseService dbHelper;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() async {
+    dbTest = await openDatabase(
+      inMemoryDatabasePath,
+      onCreate: (db, version) {
+        return db
+            .execute('CREATE TABLE items(id INTEGER PRIMARY KEY, nombre TEXT)');
+      },
+      version: 1,
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    dbHelper = DatabaseService(db: dbTest);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  tearDown(() async {
+    await dbHelper.close();
+  });
+
+  test('Insertar un item en la base de datos', () async {
+    final item = TaskModel(
+      title: "Test Title",
+      description: "description",
+      completed: true,
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+    );
+    await dbHelper.insert(item);
+
+    List<TaskModel> items = await dbHelper.fetchTasks();
+
+    expect(items.length, 1);
+    expect(items.first.title, 'Test Title');
+  });
+
+  test('Delete Item', () async {
+    final item = TaskModel(
+      title: "Test Delete",
+      description: "description",
+      completed: true,
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+    );
+    await dbHelper.insert(item);
+
+    List<TaskModel> itemsBefore = await dbHelper.fetchTasks();
+    expect(itemsBefore.length, 1);
+
+    await dbHelper.delete(itemsBefore.first.id!);
+
+    List<TaskModel> itemsAfter = await dbHelper.fetchTasks();
+    expect(itemsAfter.length, 0);
   });
 }
