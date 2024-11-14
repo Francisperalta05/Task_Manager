@@ -1,22 +1,30 @@
 part of 'task_bloc.dart';
 
 @immutable
-class TaskState {}
+class TaskState {
+  final List<TaskModel> tasks;
+  final String errorMessage;
+  final bool taskLoading;
+  final bool hasError;
 
-class TaskLoading extends TaskState {}
+  const TaskState({
+    this.tasks = const [],
+    this.errorMessage = "",
+    this.taskLoading = false,
+    this.hasError = false,
+  });
 
-class TaskLoaded extends TaskState {
-  final List<Task> tasks;
-  TaskLoaded(this.tasks);
-
-  @override
-  List<Object> get props => [tasks];
-}
-
-class TaskError extends TaskState {
-  final String message;
-  TaskError(this.message);
-
-  @override
-  List<Object> get props => [message];
+  TaskState copyWith({
+    List<TaskModel>? tasks,
+    String? errorMessage,
+    bool? taskLoading,
+    bool? hasError,
+  }) {
+    return TaskState(
+      tasks: tasks ?? this.tasks,
+      errorMessage: errorMessage ?? this.errorMessage,
+      taskLoading: taskLoading ?? this.taskLoading,
+      hasError: hasError ?? this.hasError,
+    );
+  }
 }

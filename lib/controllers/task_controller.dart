@@ -6,17 +6,14 @@ class TaskController {
 
   TaskController() : taskBloc = TaskBloc(DatabaseService());
 
-  void loadTasks() {
-    taskBloc.add(LoadTasks());
-  }
+  void loadTasks() => taskBloc.add(LoadTasks());
 
-  void addTask(String taskName) {
-    taskBloc.add(AddTask(taskName));
-  }
+  void addTask(String taskName, String description) =>
+      taskBloc.add(AddTask(taskName, description));
 
-  void deleteTask(String taskId) {
-    taskBloc.add(DeleteTask(taskId));
-  }
+  void deleteTask(int taskId) => taskBloc.add(DeleteTask(taskId));
+
+  void completeTask(int taskId) => taskBloc.add(CompleteTask(taskId));
 
   void dispose() {
     taskBloc.close();

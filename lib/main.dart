@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_manager/blocs/task_bloc/task_bloc.dart';
+import 'package:task_manager/routes/routes.dart';
 import 'package:task_manager/services/database_service.dart';
 
+import 'utils/themes.dart';
 import 'views/task_list.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const TaskManager());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class TaskManager extends StatelessWidget {
+  const TaskManager({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -20,12 +21,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => TaskBloc(DatabaseService())),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: TaskPage(),
+        title: 'Task Manager',
+        theme: themes,
+        routes: getAppRoutes,
+        initialRoute: TaskList.routeName,
       ),
     );
   }
