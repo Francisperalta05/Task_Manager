@@ -58,9 +58,8 @@ class DatabaseService {
     return [];
   }
 
-  Future<int> delete(int id) async {
-    return await db!.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
-  }
+  Future<int> delete(int id) async =>
+      await db!.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
 
   Future<int> completeTask(int id) async => await db!.update(
         tableName,
