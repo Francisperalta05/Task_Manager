@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
+
 import '../models/task.dart';
 
 class DatabaseService {
@@ -26,7 +27,7 @@ class DatabaseService {
         $columnUpdated text not null)
   ''');
 
-    return await getTodo();
+    return await getTaskList();
   }
 
   Future<void> open() async {
@@ -48,10 +49,8 @@ class DatabaseService {
     }
   }
 
-  Future<List<TaskModel>> getTodo([int id = 0]) async {
-    List<Map> maps = await db!.query(
-      tableName,
-    );
+  Future<List<TaskModel>> getTaskList([int id = 0]) async {
+    List<Map> maps = await db!.query(tableName);
 
     if (maps.isNotEmpty) {
       return taskModelFromJson(json.encode(maps));
