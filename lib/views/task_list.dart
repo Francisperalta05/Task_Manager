@@ -142,8 +142,10 @@ class _TaskListState extends State<TaskList> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () =>
-              Navigator.of(context).pushNamed(AddTaskView.routeName),
+          onPressed: () => Navigator.of(context).pushNamed(
+            AddTaskView.routeName,
+            arguments: taskController,
+          ),
           backgroundColor: theme.primaryColor,
           child: const Icon(Icons.add, color: Colors.white),
         ),

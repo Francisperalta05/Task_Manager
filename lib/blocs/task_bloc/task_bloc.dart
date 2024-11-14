@@ -56,7 +56,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           description: event.description,
         ),
       );
-      Future.delayed(Durations.medium4, () => add(LoadTasks()));
+      add(LoadTasks());
     } catch (e) {
       emit.call(state.copyWith(
           taskLoading: false,

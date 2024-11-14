@@ -19,12 +19,6 @@ class _AddTaskState extends State<AddTaskView> {
   late TaskController taskController;
 
   @override
-  void initState() {
-    taskController = TaskController();
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
@@ -35,13 +29,15 @@ class _AddTaskState extends State<AddTaskView> {
     if (_formKey.currentState?.validate() ?? false) {
       final title = _titleController.text.trim();
       final description = _descriptionController.text.trim();
+      Navigator.pop(context);
       taskController.addTask(title, description);
-      Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    taskController =
+        ModalRoute.settingsOf(context)?.arguments as TaskController;
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
