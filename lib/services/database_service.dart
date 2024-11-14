@@ -44,8 +44,8 @@ class DatabaseService {
       db = await openDatabase(path);
 
       return db!;
-    } on Exception catch (e) {
-      throw e;
+    } on Exception {
+      rethrow;
     }
   }
 
@@ -53,8 +53,8 @@ class DatabaseService {
     try {
       final id = await db!.insert(tableName, task.toJson());
       return id;
-    } on Exception catch (e) {
-      throw e;
+    } on Exception {
+      rethrow;
     }
   }
 
@@ -83,10 +83,15 @@ class DatabaseService {
     return await db!.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
   }
 
-  Future<int> update(TaskModel todo) async {
-    return await db!.update(tableName, todo.toJson(),
-        where: '$columnId = ?', whereArgs: [todo.id]);
-  }
+  Future<int> update(int id) async => await db!.update(
+        tableName,
+        {
+          columnCompleted: 1,
+          columnUpdated: DateTime.now().toIso8601String(),
+        },
+        where: 'id = ?',
+        whereArgs: [id],
+      );
 
   Future close() async => db!.close();
 }

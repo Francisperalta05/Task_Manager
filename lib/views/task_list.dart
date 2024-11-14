@@ -62,6 +62,14 @@ class _TaskListState extends State<TaskList> {
                   ),
                 ),
               );
+            } else if (state.tasks.isEmpty) {
+              return Center(
+                child: Icon(
+                  Icons.task,
+                  size: 100,
+                  color: Colors.black12,
+                ),
+              );
             }
             return ListView.builder(
               padding: EdgeInsets.all(8.0.w),
@@ -90,8 +98,10 @@ class _TaskListState extends State<TaskList> {
                       ),
                     ),
                     leading: Icon(
-                      Icons.task,
-                      color: theme.primaryColor,
+                      task.completed
+                          ? Icons.task
+                          : Icons.radio_button_unchecked_rounded,
+                      color: task.completed ? theme.primaryColor : Colors.red,
                     ),
                     trailing: PopupMenuButton(
                       itemBuilder: (context) => [

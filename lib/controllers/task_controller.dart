@@ -13,7 +13,7 @@ class TaskController {
 
   void deleteTask(int taskId) => taskBloc.add(DeleteTask(taskId));
 
-  void completeTask(int taskId) => taskBloc.add(CompleteTask(taskId));
+  void completeTask(int task) => taskBloc.add(CompleteTask(task));
 
   void dispose() {
     taskBloc.close();

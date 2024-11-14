@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import '../../models/task.dart';
 import '../../services/database_service.dart';
@@ -19,8 +18,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<DeleteTask>(_deleteTask);
   }
 
-  //TODO: Complete methods
-  FutureOr<void> _completeTask(CompleteTask event, Emitter<TaskState> emit) {}
+  Future<void> _completeTask(
+      CompleteTask event, Emitter<TaskState> emit) async {
+    try {
+      await taskService.update(event.taskId);
+      add(LoadTasks());
+    } catch (e) {
+      emit.call(state.copyWith(
+        taskLoading: false,
+        hasError: true,
+        errorMessage: "Failed to delete tasks $e",
+      ));
+    }
+  }
 
   FutureOr<void> _deleteTask(DeleteTask event, Emitter<TaskState> emit) async {
     try {
@@ -42,7 +52,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
           title: event.title,
           createdAt: DateTime.now(),
           lastUpdated: DateTime.now(),
-          completed: 0,
+          completed: false,
           description: event.description,
         ),
       );

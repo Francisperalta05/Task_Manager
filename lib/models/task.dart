@@ -10,7 +10,7 @@ class TaskModel {
   int? id;
   String title;
   String description;
-  int completed;
+  bool completed;
   DateTime createdAt;
   DateTime lastUpdated;
 
@@ -27,7 +27,7 @@ class TaskModel {
         id: json["id"],
         title: json["title"],
         description: json["description"],
-        completed: json["completed"],
+        completed: json["completed"] == 1,
         createdAt: DateTime.parse(json["createdAt"]),
         lastUpdated: DateTime.parse(json["lastUpdated"]),
       );
@@ -36,7 +36,7 @@ class TaskModel {
         "id": id,
         "title": title,
         "description": description,
-        "completed": completed,
+        "completed": completed ? 1 : 0,
         "createdAt": createdAt.toIso8601String(),
         "lastUpdated": lastUpdated.toIso8601String(),
       };
