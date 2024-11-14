@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:sqflite/sqflite.dart';
-
 import '../models/task.dart';
 
 class DatabaseService {
@@ -15,12 +13,8 @@ class DatabaseService {
   static const String columnCreated = "createdAt";
   static const String columnUpdated = "lastUpdated";
 
-  DatabaseService({this.db});
-
   Future<List<TaskModel>> fetchTasks() async {
-    final databasesPath = await getDatabasesPath();
-
-    db ??= await open("$databasesPath/task.db");
+    await open();
 
     await db!.execute('''
         CREATE TABLE IF NOT EXISTS $tableName (
@@ -35,11 +29,11 @@ class DatabaseService {
     return await getTodo();
   }
 
-  Future<Database> open(String path) async {
+  Future<void> open() async {
     try {
-      final dbOpen = await openDatabase(path);
+      final databasesPath = await getDatabasesPath();
 
-      return dbOpen;
+      db ??= await openDatabase("$databasesPath/task.db");
     } on Exception {
       rethrow;
     }
@@ -57,18 +51,8 @@ class DatabaseService {
   Future<List<TaskModel>> getTodo([int id = 0]) async {
     List<Map> maps = await db!.query(
       tableName,
-      // columns: [
-      //   columnId,
-      //   columnTitle,
-      //   columnDescription,
-      //   columnCompleted,
-      //   columnCreated,
-      //   columnUpdated,
-      // ],
-      // where: '$columnId = ?',
-      // whereArgs: [id],
     );
-    // log(json.encode(maps));
+
     if (maps.isNotEmpty) {
       return taskModelFromJson(json.encode(maps));
     }

@@ -1,61 +1,106 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:task_manager/models/task.dart';
 import 'package:task_manager/services/database_service.dart';
 
 void main() {
-  late Database dbTest;
-  late DatabaseService dbHelper;
+  late DatabaseService databaseService;
 
+  // Initialize the database service before each test
   setUp(() async {
-    dbTest = await openDatabase(
-      inMemoryDatabasePath,
-      onCreate: (db, version) {
-        return db.execute(
-            'CREATE TABLE items (id INTEGER PRIMARY KEY, nombre TEXT)');
-      },
-      version: 1,
-    );
-
-    dbHelper = DatabaseService(db: dbTest);
+    databaseService = DatabaseService();
+    // Create the database in memory for each test
+    await databaseService.fetchTasks();
   });
 
+  // Close the database after each test
   tearDown(() async {
-    await dbHelper.close();
+    await databaseService.close();
   });
 
-  test('Insertar un item en la base de datos', () async {
-    final item = TaskModel(
-      title: "Test Title",
-      description: "description",
-      completed: true,
+  // Test: Inserting a task
+  test('Insert a task into the database', () async {
+    TaskModel task = TaskModel(
+      title: 'Test Task',
+      description: 'Task description',
+      completed: false,
       createdAt: DateTime.now(),
       lastUpdated: DateTime.now(),
     );
-    await dbHelper.insert(item);
 
-    List<TaskModel> items = await dbHelper.fetchTasks();
+    // Insert the task into the database
+    final id = await databaseService.insert(task);
+    expect(id, isNotNull);
 
-    expect(items.length, 1);
-    expect(items.first.title, 'Test Title');
+    // Fetch the task from the database and verify
+    final tasks = await databaseService.getTodo();
+    expect(tasks.length, 1);
+    expect(tasks.first.title, 'Test Task');
+    expect(tasks.first.description, 'Task description');
   });
 
-  test('Delete Item', () async {
-    final item = TaskModel(
-      title: "Test Delete",
-      description: "description",
-      completed: true,
+  // Test: Fetching tasks
+  test('Fetch tasks from the database', () async {
+    // Insert a task first
+    TaskModel task = TaskModel(
+      id: 0,
+      title: 'Test Task Fetch',
+      description: 'Test task fetch description',
+      completed: false,
       createdAt: DateTime.now(),
       lastUpdated: DateTime.now(),
     );
-    await dbHelper.insert(item);
 
-    List<TaskModel> itemsBefore = await dbHelper.fetchTasks();
-    expect(itemsBefore.length, 1);
+    await databaseService.insert(task);
 
-    await dbHelper.delete(itemsBefore.first.id!);
+    // Fetch tasks
+    final tasks = await databaseService.getTodo();
+    expect(tasks.isNotEmpty, true);
+    expect(tasks.first.title, 'Test Task Fetch');
+  });
 
-    List<TaskModel> itemsAfter = await dbHelper.fetchTasks();
-    expect(itemsAfter.length, 0);
+  // Test: Completing a task
+  test('Complete a task in the database', () async {
+    // Insert a task first
+    TaskModel task = TaskModel(
+      id: 0,
+      title: 'Test Task Complete',
+      description: 'Complete task description',
+      completed: false,
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+    );
+
+    final taskId = await databaseService.insert(task);
+
+    // Complete the task
+    final updatedRows = await databaseService.completeTask(taskId!);
+    expect(updatedRows, 1);
+
+    // Fetch the task to verify it's marked as completed
+    final tasks = await databaseService.getTodo();
+    expect(tasks.first.completed, 1); // Verify the task is completed
+  });
+
+  // Test: Deleting a task
+  test('Delete a task from the database', () async {
+    // Insert a task first
+    TaskModel task = TaskModel(
+      id: 0,
+      title: 'Test Task Delete',
+      description: 'Delete task description',
+      completed: false,
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+    );
+
+    final taskId = await databaseService.insert(task);
+
+    // Delete the task
+    final deletedRows = await databaseService.delete(taskId!);
+    expect(deletedRows, 1);
+
+    // Verify the task is deleted
+    final tasks = await databaseService.getTodo();
+    expect(tasks.isEmpty, true);
   });
 }
